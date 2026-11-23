@@ -1,3 +1,0 @@
-team = "{team}"
-members = []          # your GitHub names
-command = ["julia", "run.jl"]

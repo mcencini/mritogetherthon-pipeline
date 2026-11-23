@@ -1,0 +1,15 @@
+# A team's pull request goes to its own branch, team-NN, not to main.
+name: Pull request
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  base:
+    if: github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "::error::Open the pull request to your team's branch, team-NN, not to main"
+          exit 1

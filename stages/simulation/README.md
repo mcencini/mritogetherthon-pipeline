@@ -1,16 +1,13 @@
 # Simulation (day 2)
 
-Simulate the sequence on the placenta phantom.
+Simulate the sequence on one of the placenta phantoms with KomaMRI.
 
 | | |
 |---|---|
-| **Reads** | `sequence.seq`, `bvals`, `bvecs`, `phantom.phantom` |
-| **Writes** | `raw.h5` |
+| **Reads** | `sequence.seq`, `bvals`, `bvecs`, a phantom of the hands-on material's `data/phantoms` |
+| **Writes** | `raw.mrd` |
 
-- `raw.h5`: ISMRMRD raw data, in the group `dataset`. Each acquisition is one
-  k-space line, numbered by its counters: `idx.repetition` is its volume, from
-  0, and `idx.kspace_encode_step_1` its line, from 0. Each volume holds each
-  line once.
-
-KomaMRI does not simulate diffusion by itself (the phantom's `Dλ1`, `Dλ2` and
-`Dθ` are not used by its simulation, nor kept by `write_phantom`).
+- `raw.mrd`: ISMRMRD raw data. Each acquisition is one k-space line, numbered
+  by its counters: `idx.repetition` is its volume, from 0, and
+  `idx.kspace_encode_step_1` its line, from 0. Each volume holds each line
+  once.

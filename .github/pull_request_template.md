@@ -1,5 +1,3 @@
-**Team and stage:** `stages/<stage>/<team>/`
+**Team:** NN
 
-**What changed:**
-
-- [ ] `python -m pipeline check <stage>/<team>` passes in the environment
+Open this pull request to your team's branch, `team-NN`, not to `main`.

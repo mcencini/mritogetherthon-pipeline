@@ -1,9 +1,0 @@
-# The implementation the pipeline runs for each stage: the name of a team's
-# folder in stages/<stage>/. `python -m pipeline list` lists them. The
-# organisers fill this in as the teams' implementations come in.
-[choose]
-# sequence = "team-name"
-# simulation = "team-name"
-# motion = "team-name"
-# reconstruction = "team-name"
-# analysis = "team-name"
