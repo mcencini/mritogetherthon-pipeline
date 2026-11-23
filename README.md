@@ -52,7 +52,7 @@ from their forks.
 After the vote, record for each winning stage the team's fork, the fork's commit
 at the time of the vote (on the team's pull request, under *Commits*), and the
 folder of the stage, such as `day2/simulation`. A team keeps pushing to its fork,
-so the commit pins what won. On a branch, not on `main`:
+so the commit pins what won. On the `assembly` branch, not on `main`:
 
 ```bash
 tools/promote simulation alice 3f2a9c1 day2/simulation
@@ -60,4 +60,5 @@ tools/promote simulation alice 3f2a9c1 day2/simulation
 
 copies that folder to `pipeline/simulation/`, with a `SOURCE.md` naming the fork,
 the commit and the authors, and commits it with the authors as co-authors. One
-pull request of all the stages then goes to `main`.
+pull request from `assembly` to `main` then brings all the stages in, after
+the OC has run them in order and fixed what does not fit.
