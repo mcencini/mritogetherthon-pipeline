@@ -1,0 +1,20 @@
+# The helper that copies a winning stage into pipeline/, against a local
+# repository standing in for a team's fork.
+name: Promote
+
+on:
+  pull_request:
+    paths: [tools/**, tests/**, .github/workflows/promote.yml]
+  push:
+    branches: [main]
+    paths: [tools/**, tests/**, .github/workflows/promote.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash tests/test_promote.sh

@@ -48,3 +48,16 @@ for n in $(seq -w 1 25); do git push origin main:refs/heads/team-$n; done
 
 Teams are not given write access to this repository: they send pull requests
 from their forks.
+
+After the vote, record for each winning stage the team's fork, the fork's commit
+at the time of the vote (on the team's pull request, under *Commits*), and the
+folder of the stage, such as `day2/simulation`. A team keeps pushing to its fork,
+so the commit pins what won. On a branch, not on `main`:
+
+```bash
+tools/promote simulation alice 3f2a9c1 day2/simulation
+```
+
+copies that folder to `pipeline/simulation/`, with a `SOURCE.md` naming the fork,
+the commit and the authors, and commits it with the authors as co-authors. One
+pull request of all the stages then goes to `main`.
