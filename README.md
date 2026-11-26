@@ -2,8 +2,8 @@
 
 The open-source, end-to-end pipeline for placenta diffusion MRI that the
 [MRI TogetherThon](https://mritogether.esmrmb.org/26m/) builds, from the
-sequence to the analysis. This repository holds the contract of each stage,
-every team's work, and, after the vote, the pipeline itself. The hands-on
+sequence to the analysis. This repository holds the contract of each stage
+and every team's pipeline, in the team's pull request. The hands-on
 notebooks and data are in the
 [environment's repository](https://github.com/mcencini/mritogetherthon).
 
@@ -12,9 +12,10 @@ repository explains.
 
 ## Stages
 
-Every team works through the same five stages, one after the other. Each reads
-files by name from the stages before it and writes files by name for the stages
-after it: its contract, in its folder's README.
+Every team builds the same five stages, one a day on days 1 to 4, and joins
+them end to end on day 5. Each stage reads files by name from the stages before
+it and writes files by name for the stages after it: its contract, in its
+folder's README.
 
 | Stage | Day | Reads | Writes |
 |---|---|---|---|
@@ -34,8 +35,33 @@ fork's `main` to its own branch here, `team-NN`. The teams' pull requests never
 meet. [Working as a team](https://github.com/mcencini/mritogetherthon/blob/main/docs/teams.md)
 explains how a team sets it up.
 
-The best implementation of each stage is voted by the organisers, the tutors and
-the speakers, and copied to [`pipeline/`](pipeline).
+Every team's work is public, in its pull request: a team that did not build a
+stage takes another team's. In the environment, `team use 12 day2/simulation`
+copies that folder of team 12's pull request to `~/team`, with a `SOURCE.md`
+naming its authors.
+
+## Final submission
+
+By the end of day 5, each team's pull request to its branch, `team-NN`, is its
+final pipeline. At its root:
+
+- **`run_pipeline.sh`** runs the whole pipeline, from the sequence to the
+  analysis, in the environment, without anyone stepping in. It may read the
+  organisers' material from `~/material`, and downloads anything else from a
+  public, permanent address.
+- **`README.md`** shows a screenshot of the result of each step, for the
+  organisers and the tutors to assess.
+
+The pull request's description has a checklist: tick each stage your team
+developed itself. A stage not ticked comes from another team, or from the
+organisers' material; the README says which.
+
+## Evaluation
+
+The organisers and the tutors assess each pipeline from its README and its
+code. Runtime and peak memory, measured by running `run_pipeline.sh`, break
+ties. Every team may submit; only teams that developed all five stages
+themselves qualify for the prizes.
 
 ## For organisers
 
@@ -43,22 +69,13 @@ Create the teams' branches once the teams are numbered, from the state of
 `main` the TogetherThon starts from:
 
 ```bash
-for n in $(seq -w 1 25); do git push origin main:refs/heads/team-$n; done
+for n in $(seq -w 1 50); do git push origin main:refs/heads/team-$n; done
 ```
 
 Teams are not given write access to this repository: they send pull requests
 from their forks.
 
-After the vote, record for each winning stage the team's fork, the fork's commit
-at the time of the vote (on the team's pull request, under *Commits*), and the
-folder of the stage, such as `day2/simulation`. A team keeps pushing to its fork,
-so the commit pins what won. On the `assembly` branch, not on `main`:
-
-```bash
-tools/promote simulation alice 3f2a9c1 day2/simulation
-```
-
-copies that folder to `pipeline/simulation/`, with a `SOURCE.md` naming the fork,
-the commit and the authors, and commits it with the authors as co-authors. One
-pull request from `assembly` to `main` then brings all the stages in, after
-the OC has run them in order and fixed what does not fit.
+To measure a team's pipeline: *Actions → Profile → Run workflow*, with the
+number of its pull request. It runs `run_pipeline.sh` in the environment, on the
+same kind of GitHub runner for every team, and reports its exit status, wall
+time and peak memory in the run's summary.

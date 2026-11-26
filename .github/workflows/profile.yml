@@ -1,0 +1,79 @@
+# A team's pipeline, run end to end for the organisers: run_pipeline.sh, at the
+# root of the team's pull request, in the environment (:latest), on the same
+# kind of runner for every team, so that its wall time and peak memory compare.
+# They are the tie-breakers of the evaluation. Started by hand, with the pull
+# request's number; ~/material is the organisers' material, as in the
+# environment, and ~/team the pull request's files.
+name: Profile
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: "The team's pull request"
+        required: true
+
+permissions:
+  contents: read
+  pull-requests: read
+
+env:
+  IMAGE: ghcr.io/mcencini/mritogetherthon:latest
+  PR: ${{ inputs.pr }}
+
+jobs:
+  profile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - name: Free disk space
+        run: sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /opt/hostedtoolcache/CodeQL
+      - name: The pull request's files
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr view "$PR" -R "$GITHUB_REPOSITORY" --json title,headRefOid,baseRefName,url \
+            -q '"\(.title) (\(.baseRefName)), \(.url), commit \(.headRefOid)"' | tee pr.txt
+          mkdir -p work/team && cd work/team
+          git init -q && git fetch -q --depth 1 "https://github.com/$GITHUB_REPOSITORY" "refs/pull/$PR/head"
+          git checkout -q FETCH_HEAD
+          test -f run_pipeline.sh || { echo "::error::No run_pipeline.sh at the root of pull request $PR"; exit 1; }
+      - name: The environment
+        run: docker pull -q "$IMAGE"
+      # As the launcher starts it: as the runner's user, on a folder of the
+      # runner's as the home folder. The material is fetched first, untimed; the
+      # peak memory is the container's (its cgroup's memory.peak).
+      - name: Run run_pipeline.sh
+        run: |
+          chmod -R a+rwX work
+          set +e
+          docker run --rm --user "$(id -u):$(id -g)" -e HOME=/home/mri -v "$PWD/work:/home/mri" \
+            -w /home/mri/team --entrypoint bash "$IMAGE" -c '
+              TEAM_DIR=/nonexistent sync-material >/dev/null
+              start=$(date +%s%N)
+              bash run_pipeline.sh
+              status=$?
+              end=$(date +%s%N)
+              echo "status=$status" > /home/mri/profile.txt
+              echo "seconds=$(( (end - start) / 1000000 ))e-3" >> /home/mri/profile.txt
+              echo "peak_bytes=$(cat /sys/fs/cgroup/memory.peak 2>/dev/null)" >> /home/mri/profile.txt
+              exit $status' 2>&1 | tee run.log
+          test -f work/profile.txt || { echo "::error::The environment did not run run_pipeline.sh"; exit 1; }
+          . work/profile.txt
+          {
+            echo "### $(cat pr.txt)"
+            echo
+            echo "| Exit status | Wall time | Peak memory |"
+            echo "|---|---|---|"
+            awk -v s="$seconds" -v m="$peak_bytes" -v st="$status" \
+              'BEGIN { printf "| %s | %d min %02d s | %.2f GB |\n", st, int(s / 60), int(s) % 60, m / 1e9 }'
+          } >> "$GITHUB_STEP_SUMMARY"
+          cat "$GITHUB_STEP_SUMMARY"
+          exit "$status"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: profile-pr-${{ inputs.pr }}
+          path: |
+            run.log
+            work/profile.txt
