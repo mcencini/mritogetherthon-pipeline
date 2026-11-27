@@ -38,10 +38,18 @@ stage can take another team's, with `team use`.
 
 ## Final submission
 
-By the end of day 5, each team's pull request is its final pipeline. What it
-must contain, and how the organisers and the tutors will assess it, will be
-confirmed during the week. Every team may submit; only teams that developed
-all five stages themselves qualify for the prizes.
+By the end of day 5, each team's pull request to its branch, `team-NN`, is its
+final pipeline. At its root:
+
+- **`run_pipeline.sh`** runs the whole pipeline, from the sequence to the
+  analysis, in the environment, without anyone stepping in.
+- **`README.md`** shows a screenshot of the result of each stage, for the
+  organisers and the tutors to assess.
+
+The pull request's description has a checklist: tick each stage your team
+developed itself. Every team may submit; only teams that developed all five
+stages themselves qualify for the prizes. The rest of the assessment will be
+confirmed during the week.
 
 ## For organisers
 
